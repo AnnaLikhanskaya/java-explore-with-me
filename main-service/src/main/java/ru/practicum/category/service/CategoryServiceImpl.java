@@ -27,7 +27,7 @@ public class CategoryServiceImpl implements CategoryService {
             throw new BadRequestException("Параметр запроса 'from' должен быть больше 0, текущее значение from=" + from);
         }
         if (size < 0) {
-            new BadRequestException("Параметр запроса 'size' должен быть больше 0, текущее значение size=" + size);
+            throw new BadRequestException("Параметр запроса 'size' должен быть больше 0, текущее значение size=" + size);
         }
         Pageable pageable = PageRequest.of(from / size, size);
         List<Category> categotyDtoList = categoryRepository.findAllCategories(pageable);
