@@ -19,6 +19,7 @@ public class EventController {
 
     private final EventService eventService;
 
+
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<EventShortDto> getEventsByCondition(@RequestParam(required = false, name = "text") String text,

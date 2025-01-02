@@ -41,6 +41,7 @@ public class StatsClient {
                 .queryParam("end", end.format(formatter))
                 .queryParam("uris", uris)
                 .queryParam("unique", unique)
+                .queryParam("ss", start)
                 .toUriString();
         ResponseEntity<List<ViewStatsDto>> responseEntity = restTemplate.exchange(
                 url,

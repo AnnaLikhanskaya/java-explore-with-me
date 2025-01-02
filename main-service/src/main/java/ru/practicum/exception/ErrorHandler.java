@@ -25,7 +25,7 @@ public class ErrorHandler {
         return ApiError.builder()
                 .errors(errors)
                 .status(HttpStatus.BAD_REQUEST.toString())
-                .reason("Not enough required query params")
+                .reason("Недостаточно обязательных параметров запроса")
                 .message(e.getMessage())
                 .timestamp(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .build();
@@ -36,7 +36,7 @@ public class ErrorHandler {
     public ApiError handleValidation(final MethodArgumentNotValidException e) {
         List<String> errors = e.getBindingResult().getFieldErrors().stream()
                 .map(fieldError ->
-                        String.format("Field: %s. Error: %s. Value: %s",
+                        String.format("Поле: %s. Ошибка: %s. Значение: %s",
                                 fieldError.getField(),
                                 fieldError.getDefaultMessage(),
                                 fieldError.getRejectedValue() != null ?
@@ -45,7 +45,7 @@ public class ErrorHandler {
         return ApiError.builder()
                 .errors(errors)
                 .status(HttpStatus.BAD_REQUEST.toString())
-                .reason("Incorrectly made request.")
+                .reason("Некорректный запрос")
                 .message(e.getMessage())
                 .timestamp(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .build();
@@ -60,7 +60,7 @@ public class ErrorHandler {
         return ApiError.builder()
                 .errors(errors)
                 .status(HttpStatus.NOT_FOUND.toString())
-                .reason("The required object was not found.")
+                .reason("Объект не найден")
                 .message(e.getMessage())
                 .timestamp(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .build();
@@ -75,7 +75,7 @@ public class ErrorHandler {
         return ApiError.builder()
                 .errors(errors)
                 .status(HttpStatus.CONFLICT.toString())
-                .reason("Integrity constraint has been violated.")
+                .reason("Нарушение целостности данных")
                 .message(e.getMessage())
                 .timestamp(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .build();
@@ -90,7 +90,7 @@ public class ErrorHandler {
         return ApiError.builder()
                 .errors(errors)
                 .status(HttpStatus.FORBIDDEN.toString())
-                .reason("For the requested operation the conditions are not met.")
+                .reason("Условия для выполнения операции не выполнены")
                 .message(e.getMessage())
                 .timestamp(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .build();
@@ -105,7 +105,7 @@ public class ErrorHandler {
         return ApiError.builder()
                 .errors(errors)
                 .status(HttpStatus.BAD_REQUEST.toString())
-                .reason("Incorrectly made request.")
+                .reason("Некорректный запрос")
                 .message(e.getMessage())
                 .timestamp(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .build();
@@ -120,7 +120,7 @@ public class ErrorHandler {
         return ApiError.builder()
                 .errors(errors)
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.toString())
-                .reason("Something went wrong")
+                .reason("Что-то пошло не так")
                 .message(e.getMessage())
                 .timestamp(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .build();
@@ -135,7 +135,7 @@ public class ErrorHandler {
         return ApiError.builder()
                 .errors(errors)
                 .status(HttpStatus.CONFLICT.toString())
-                .reason("For the requested operation the conditions are not met.")
+                .reason("Условия для выполнения операции не выполнены")
                 .message(e.getMessage())
                 .timestamp(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .build();

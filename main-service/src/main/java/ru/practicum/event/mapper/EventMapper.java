@@ -9,6 +9,7 @@ import ru.practicum.user.mapper.UserMapper;
 import ru.practicum.user.model.User;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class EventMapper {
 
@@ -16,12 +17,14 @@ public class EventMapper {
                                                Category category,
                                                User user,
                                                LocationDto locationDto) {
+        DateTimeFormatter formater = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String createOn = LocalDateTime.now().format(formater);
         return Event.builder()
                 .id(null)
                 .annotation(newEventDto.getAnnotation())
                 .category(category)
                 .confirmedRequests(0)
-                .createdOn(LocalDateTime.now())
+                .createdOn(LocalDateTime.parse(createOn, formater))
                 .description(newEventDto.getDescription())
                 .eventDate(newEventDto.getEventDate())
                 .initiator(user)
@@ -70,6 +73,5 @@ public class EventMapper {
                 .views(event.getViews())
                 .build();
     }
-
 
 }

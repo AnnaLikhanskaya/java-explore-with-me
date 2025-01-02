@@ -2,6 +2,10 @@ package ru.practicum.admin.service;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
@@ -105,7 +109,6 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Transactional
-    @Override
     public List<EventFullDto> searchEventByCondition(List<Long> usersIds,
                                                      List<String> eventsStates,
                                                      List<Long> categoriesIds,
@@ -113,13 +116,36 @@ public class AdminServiceImpl implements AdminService {
                                                      LocalDateTime endDate,
                                                      Integer from,
                                                      Integer size) {
-        Pageable pageable = PageRequest.of(from / size, size);
-        return eventRepository.findEventsByCriteria(usersIds,
-                        eventsStates,
-                        categoriesIds,
-                        startDate,
-                        endDate,
-                        pageable).stream()
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Event> query = cb.createQuery(Event.class);
+        Root<Event> root = query.from(Event.class);
+
+        List<Predicate> predicates = new ArrayList<>();
+
+        if (usersIds != null && !usersIds.isEmpty()) {
+            predicates.add(root.get("initiator").get("id").in(usersIds));
+        }
+        if (eventsStates != null && !eventsStates.isEmpty()) {
+            predicates.add(root.get("state").in(eventsStates));
+        }
+        if (categoriesIds != null && !categoriesIds.isEmpty()) {
+            predicates.add(root.get("category").get("id").in(categoriesIds));
+        }
+        if (startDate != null) {
+            predicates.add(cb.greaterThanOrEqualTo(root.get("eventDate"), startDate));
+        }
+        if (endDate != null) {
+            predicates.add(cb.lessThanOrEqualTo(root.get("eventDate"), endDate));
+        }
+
+        query.select(root).where(predicates.toArray(new Predicate[0]));
+
+        List<Event> events = entityManager.createQuery(query)
+                .setFirstResult(from)
+                .setMaxResults(size)
+                .getResultList();
+
+        return events.stream()
                 .map(EventMapper::fromEventToEventFullDto)
                 .toList();
     }
