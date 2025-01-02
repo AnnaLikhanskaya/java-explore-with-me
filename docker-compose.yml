@@ -35,7 +35,7 @@ services:
       context: ./main-service
     container_name: jewm_service_container
     ports:
-      - "8081:8080"
+      - "8080:8080"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/jewm
       - SPRING_DATASOURCE_USERNAME=dbuser
