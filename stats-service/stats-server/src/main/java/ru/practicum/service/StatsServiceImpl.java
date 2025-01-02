@@ -51,7 +51,7 @@ public class StatsServiceImpl implements StatsService {
     }
 
     private void validationDate(LocalDateTime start, LocalDateTime end) {
-        if (start == null || end == null || end.isBefore(start)) {
+        if (end.isBefore(start)) {
             throw new ValidationException("Начало не может быть раньше времени");
         }
     }
