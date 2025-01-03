@@ -15,19 +15,25 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.category.mapper.CategoryMapper;
 import ru.practicum.category.model.Category;
-import ru.practicum.category.model.CategoryDto;
-import ru.practicum.category.model.NewCategoryDto;
+import ru.practicum.category.dto.CategoryDto;
+import ru.practicum.category.dto.NewCategoryDto;
 import ru.practicum.category.repository.CategoryRepository;
+import ru.practicum.compilation.dto.CompilationDto;
+import ru.practicum.compilation.dto.NewCompilationDto;
+import ru.practicum.compilation.dto.UpdateCompilationRequest;
 import ru.practicum.compilation.mapper.CompilationMapper;
 import ru.practicum.compilation.model.*;
 import ru.practicum.compilation.repository.CompilationRepository;
 import ru.practicum.compilation.repository.CompilationsEventsRepository;
+import ru.practicum.event.dto.EventFullDto;
+import ru.practicum.event.dto.EventShortDto;
+import ru.practicum.event.dto.UpdateEventAdminRequest;
 import ru.practicum.event.mapper.EventMapper;
 import ru.practicum.event.model.*;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.*;
 import ru.practicum.location.mapper.LocationMapper;
-import ru.practicum.location.model.LocationDto;
+import ru.practicum.location.model.Locations;
 import ru.practicum.location.repository.LocationRepository;
 import ru.practicum.user.dto.NewUserRequest;
 import ru.practicum.user.mapper.UserMapper;
@@ -203,8 +209,8 @@ public class AdminServiceImpl implements AdminService {
             oldEvent.setDescription(updateEvent.getDescription());
         }
         if (updateEvent.getLocation() != null) {
-            LocationDto locationDto = locationRepository.save(LocationMapper.fromLocationToLocationDto(updateEvent.getLocation()));
-            oldEvent.setLocation(locationDto);
+            Locations locations = locationRepository.save(LocationMapper.fromLocationToLocationDto(updateEvent.getLocation()));
+            oldEvent.setLocation(locations);
         }
         if (updateEvent.getPaid() != null) {
             oldEvent.setPaid(updateEvent.getPaid());

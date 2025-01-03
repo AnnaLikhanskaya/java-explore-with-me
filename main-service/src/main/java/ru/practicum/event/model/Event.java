@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 import ru.practicum.category.model.Category;
-import ru.practicum.location.model.LocationDto;
+import ru.practicum.location.model.Locations;
 import ru.practicum.user.model.User;
 
 import java.time.LocalDateTime;
@@ -57,7 +57,7 @@ public class Event {
     @ManyToOne(fetch = FetchType.EAGER)
     @ToString.Exclude
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocationDto location;
+    private Locations location;
 
     @Column(name = "paid")
     private Boolean paid;

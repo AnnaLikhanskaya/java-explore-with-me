@@ -8,6 +8,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
+import ru.practicum.event.dto.EventFullDto;
+import ru.practicum.event.dto.EventShortDto;
+import ru.practicum.event.dto.NewEventDto;
+import ru.practicum.event.dto.UpdateEventUserRequest;
 import ru.practicum.event.mapper.EventMapper;
 import ru.practicum.event.model.*;
 import ru.practicum.event.repository.EventRepository;
@@ -16,11 +20,11 @@ import ru.practicum.exception.ConflictException;
 import ru.practicum.exception.ForbiddenException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.location.mapper.LocationMapper;
-import ru.practicum.location.model.LocationDto;
+import ru.practicum.location.model.Locations;
 import ru.practicum.location.repository.LocationRepository;
-import ru.practicum.request.model.EventRequestStatusUpdateRequest;
-import ru.practicum.request.model.EventRequestStatusUpdateResult;
-import ru.practicum.request.model.ParticipationRequestDto;
+import ru.practicum.request.dto.EventRequestStatusUpdateRequest;
+import ru.practicum.request.dto.EventRequestStatusUpdateResult;
+import ru.practicum.request.model.ParticipationRequest;
 import ru.practicum.request.model.RequestStatus;
 import ru.practicum.request.repository.RequestRepository;
 import ru.practicum.user.model.User;
@@ -85,11 +89,11 @@ public class UserServiceImpl implements UserService {
         }
         Category category = categoryRepository.findById(newEventDto.getCategory()).orElseThrow(() ->
                 new NotFoundException("Категория с id=" + newEventDto.getCategory() + " не найдена"));
-        LocationDto locationDto = locationRepository.save(LocationMapper.fromLocationToLocationDto(newEventDto.getLocation()));
+        Locations locations = locationRepository.save(LocationMapper.fromLocationToLocationDto(newEventDto.getLocation()));
         Event event = EventMapper.fromNewEventDtoToEvent(newEventDto,
                 category,
                 user,
-                locationDto);
+                locations);
 
 
         return EventMapper.fromEventToEventFullDto(eventRepository.save(event));
@@ -160,8 +164,8 @@ public class UserServiceImpl implements UserService {
             event.setDescription(updateEventUserRequest.getDescription());
         }
         if (updateEventUserRequest.getLocation() != null) {
-            LocationDto locationDto = locationRepository.save(LocationMapper.fromLocationToLocationDto(updateEventUserRequest.getLocation()));
-            event.setLocation(locationDto);
+            Locations locations = locationRepository.save(LocationMapper.fromLocationToLocationDto(updateEventUserRequest.getLocation()));
+            event.setLocation(locations);
         }
         if (updateEventUserRequest.getPaid() != null) {
             event.setPaid(updateEventUserRequest.getPaid());
@@ -194,7 +198,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<ParticipationRequestDto> getRequestsOnUserEvent(Long userId, Long eventId) {
+    public List<ParticipationRequest> getRequestsOnUserEvent(Long userId, Long eventId) {
         idValidation(userId, "userId");
         idValidation(eventId, "eventId");
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь с id=" + userId + " не найден"));
@@ -223,7 +227,7 @@ public class UserServiceImpl implements UserService {
         }
         List<Long> requestsIds = updateRequest.getRequestIds();
 
-        List<ParticipationRequestDto> requestDtoListBefore = requestRepository.findAllById(requestsIds);
+        List<ParticipationRequest> requestDtoListBefore = requestRepository.findAllById(requestsIds);
         int confirmedRequests = event.getConfirmedRequests();
         int participantLimit = event.getParticipantLimit();
 
@@ -238,11 +242,11 @@ public class UserServiceImpl implements UserService {
             mayBeAccept = participantLimit - confirmedRequests;
         }
 
-        List<ParticipationRequestDto> resultConfirmedRequestsList = new ArrayList<>();
-        List<ParticipationRequestDto> resultRejectedRequestsList = new ArrayList<>();
+        List<ParticipationRequest> resultConfirmedRequestsList = new ArrayList<>();
+        List<ParticipationRequest> resultRejectedRequestsList = new ArrayList<>();
 
         if (updateRequest.getStatus().equals(RequestStatus.REJECTED.name())) {
-            for (ParticipationRequestDto requestDto : requestDtoListBefore) {
+            for (ParticipationRequest requestDto : requestDtoListBefore) {
                 if (!requestDto.getStatus().equals(RequestStatus.PENDING.name())) {
                     throw new BadRequestException("Все заявки должны быть в статусе PENDING");
                 } else {
@@ -251,7 +255,7 @@ public class UserServiceImpl implements UserService {
                 }
             }
         } else {
-            for (ParticipationRequestDto requestDto : requestDtoListBefore) {
+            for (ParticipationRequest requestDto : requestDtoListBefore) {
                 if (mayBeAccept == 0) {
                     requestDto.setStatus(RequestStatus.REJECTED.name());
                     resultRejectedRequestsList.add(requestDto);
@@ -269,7 +273,7 @@ public class UserServiceImpl implements UserService {
         }
         event.setConfirmedRequests(confirmedRequests);
         eventRepository.save(event);
-        List<ParticipationRequestDto> updateRequests = new ArrayList<>(resultConfirmedRequestsList);
+        List<ParticipationRequest> updateRequests = new ArrayList<>(resultConfirmedRequestsList);
         updateRequests.addAll(resultRejectedRequestsList);
         requestRepository.saveAll(updateRequests);
 
@@ -280,7 +284,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<ParticipationRequestDto> getUserEventRequests(Long userId) {
+    public List<ParticipationRequest> getUserEventRequests(Long userId) {
         idValidation(userId, "userId");
         User user = userRepository.findById(userId).orElseThrow(() ->
                 new NotFoundException("Пользователь с id=" + userId + " не найден"));
@@ -290,7 +294,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ParticipationRequestDto addUserRequestOnEvent(Long userId, Long eventId) {
+    public ParticipationRequest addUserRequestOnEvent(Long userId, Long eventId) {
         idValidation(userId, "userId");
         idValidation(eventId, "eventId");
         User user = userRepository.findById(userId).orElseThrow(() ->
@@ -313,7 +317,7 @@ public class UserServiceImpl implements UserService {
             }
         }
 
-        ParticipationRequestDto newRequest = ParticipationRequestDto.builder()
+        ParticipationRequest newRequest = ParticipationRequest.builder()
                 .id(null)
                 .created(LocalDateTime.now())
                 .event(eventId)
@@ -332,13 +336,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ParticipationRequestDto cancelUserRequestOnEvent(Long userId, Long requestId) {
+    public ParticipationRequest cancelUserRequestOnEvent(Long userId, Long requestId) {
         idValidation(userId, "userId");
         idValidation(requestId, "requestId");
 
         User user = userRepository.findById(userId).orElseThrow(() ->
                 new NotFoundException("Пользователь с id=" + userId + " не найден"));
-        ParticipationRequestDto request = requestRepository.findById(requestId).orElseThrow(() ->
+        ParticipationRequest request = requestRepository.findById(requestId).orElseThrow(() ->
                 new NotFoundException("Запрос с id=" + requestId + " не найден"));
         request.setStatus(RequestStatus.CANCELED.name());
 

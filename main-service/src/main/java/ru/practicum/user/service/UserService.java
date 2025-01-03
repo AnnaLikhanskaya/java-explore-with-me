@@ -1,12 +1,12 @@
 package ru.practicum.user.service;
 
-import ru.practicum.event.model.EventFullDto;
-import ru.practicum.event.model.EventShortDto;
-import ru.practicum.event.model.NewEventDto;
-import ru.practicum.event.model.UpdateEventUserRequest;
-import ru.practicum.request.model.EventRequestStatusUpdateRequest;
-import ru.practicum.request.model.EventRequestStatusUpdateResult;
-import ru.practicum.request.model.ParticipationRequestDto;
+import ru.practicum.event.dto.EventFullDto;
+import ru.practicum.event.dto.EventShortDto;
+import ru.practicum.event.dto.NewEventDto;
+import ru.practicum.event.dto.UpdateEventUserRequest;
+import ru.practicum.request.dto.EventRequestStatusUpdateRequest;
+import ru.practicum.request.dto.EventRequestStatusUpdateResult;
+import ru.practicum.request.model.ParticipationRequest;
 
 import java.util.List;
 
@@ -20,16 +20,16 @@ public interface UserService {
 
     EventFullDto updateUserEvent(Long userId, Long eventId, UpdateEventUserRequest updateEventUserRequest);
 
-    List<ParticipationRequestDto> getRequestsOnUserEvent(Long userId, Long eventId);
+    List<ParticipationRequest> getRequestsOnUserEvent(Long userId, Long eventId);
 
     EventRequestStatusUpdateResult updateRequestsOnUserEvent(Long userId,
                                                              Long eventId,
                                                              EventRequestStatusUpdateRequest updateRequest);
 
-    List<ParticipationRequestDto> getUserEventRequests(Long userId);
+    List<ParticipationRequest> getUserEventRequests(Long userId);
 
-    ParticipationRequestDto addUserRequestOnEvent(Long userId, Long eventId);
+    ParticipationRequest addUserRequestOnEvent(Long userId, Long eventId);
 
-    ParticipationRequestDto cancelUserRequestOnEvent(Long userId, Long requestId);
+    ParticipationRequest cancelUserRequestOnEvent(Long userId, Long requestId);
 
 }

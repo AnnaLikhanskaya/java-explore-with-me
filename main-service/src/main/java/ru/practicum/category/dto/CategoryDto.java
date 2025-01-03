@@ -1,19 +1,19 @@
-package ru.practicum.category.model;
+package ru.practicum.category.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
 @Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class NewCategoryDto {
+public class CategoryDto {
+
+    private Long id;
 
     @Size(min = 1, max = 50, message = "Имя должно содержать от 1 до 50 символов")
-    @NotBlank(message = "Имя не должно быть пустым")
     private String name;
 }

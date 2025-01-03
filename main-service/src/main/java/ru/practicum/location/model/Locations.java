@@ -13,7 +13,7 @@ import lombok.*;
 @AllArgsConstructor
 @Entity
 @Table(name = "locations")
-public class LocationDto {
+public class Locations {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

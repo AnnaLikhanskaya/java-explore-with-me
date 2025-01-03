@@ -1,8 +1,8 @@
 package ru.practicum.compilation.mapper;
 
 import ru.practicum.compilation.model.Compilation;
-import ru.practicum.compilation.model.CompilationDto;
-import ru.practicum.compilation.model.NewCompilationDto;
+import ru.practicum.compilation.dto.CompilationDto;
+import ru.practicum.compilation.dto.NewCompilationDto;
 
 public class CompilationMapper {
 

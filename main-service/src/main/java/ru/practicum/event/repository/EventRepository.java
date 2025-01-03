@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import ru.practicum.event.model.Event;
-import ru.practicum.event.model.EventShortDto;
+import ru.practicum.event.dto.EventShortDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,8 +13,8 @@ import java.util.Optional;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
 
-    @Query("SELECT new ru.practicum.event.model.EventShortDto(e.id, e.annotation, " +
-            "new ru.practicum.category.model.CategoryDto(c.id, c.name), e.confirmedRequests, " +
+    @Query("SELECT new ru.practicum.event.dto.EventShortDto(e.id, e.annotation, " +
+            "new ru.practicum.category.dto.CategoryDto(c.id, c.name), e.confirmedRequests, " +
             "e.eventDate, new ru.practicum.user.dto.UserShortDto(e.initiator.id, e.initiator.name), " +
             "e.paid, e.title, e.views) " +
             "FROM Event e JOIN e.category c " +
@@ -22,8 +22,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<EventShortDto> findFirstEventByCategoryId(@Param("categoryId") Long categoryId, Pageable pageable);
 
 
-    @Query("SELECT new ru.practicum.event.model.EventShortDto(e.id, e.annotation, " +
-            "new ru.practicum.category.model.CategoryDto(e.category.id, e.category.name), e.confirmedRequests, " +
+    @Query("SELECT new ru.practicum.event.dto.EventShortDto(e.id, e.annotation, " +
+            "new ru.practicum.category.dto.CategoryDto(e.category.id, e.category.name), e.confirmedRequests, " +
             "e.eventDate, new ru.practicum.user.dto.UserShortDto(e.initiator.id, e.initiator.name), " +
             "e.paid, e.title, e.views) " +
             "FROM Event e " +
@@ -31,8 +31,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "ORDER BY e.id ASC")
     List<EventShortDto> findAllEventsByInitiatorId(Long initiatorId, Pageable pageable);
 
-    @Query("SELECT new ru.practicum.event.model.EventShortDto(e.id, e.annotation, " +
-            "new ru.practicum.category.model.CategoryDto(e.category.id, e.category.name), e.confirmedRequests, " +
+    @Query("SELECT new ru.practicum.event.dto.EventShortDto(e.id, e.annotation, " +
+            "new ru.practicum.category.dto.CategoryDto(e.category.id, e.category.name), e.confirmedRequests, " +
             "e.eventDate, new ru.practicum.user.dto.UserShortDto(e.initiator.id, e.initiator.name), " +
             "e.paid, e.title, e.views) " +
             "FROM Event e " +

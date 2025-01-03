@@ -1,4 +1,4 @@
-package ru.practicum.location.model;
+package ru.practicum.location.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class Location {
+public class LocationDto {
 
     private Float lat;
 

@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "requests")
-public class ParticipationRequestDto {
+public class ParticipationRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

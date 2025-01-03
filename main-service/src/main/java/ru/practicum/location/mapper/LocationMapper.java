@@ -1,20 +1,20 @@
 package ru.practicum.location.mapper;
 
 
-import ru.practicum.location.model.Location;
-import ru.practicum.location.model.LocationDto;
+import ru.practicum.location.dto.LocationDto;
+import ru.practicum.location.model.Locations;
 
 public class LocationMapper {
 
-    public static Location fromLocationDtoToLocation(LocationDto locationDto) {
-        return Location.builder()
-                .lat(locationDto.getLat())
-                .lon(locationDto.getLon())
+    public static LocationDto fromLocationDtoToLocation(Locations locations) {
+        return LocationDto.builder()
+                .lat(locations.getLat())
+                .lon(locations.getLon())
                 .build();
     }
 
-    public static LocationDto fromLocationToLocationDto(Location location) {
-        return LocationDto.builder()
+    public static Locations fromLocationToLocationDto(LocationDto location) {
+        return Locations.builder()
                 .id(null)
                 .lat(location.getLat())
                 .lon(location.getLon())

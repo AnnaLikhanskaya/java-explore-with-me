@@ -1,12 +1,12 @@
 package ru.practicum.admin.service;
 
-import ru.practicum.category.model.CategoryDto;
-import ru.practicum.category.model.NewCategoryDto;
-import ru.practicum.compilation.model.CompilationDto;
-import ru.practicum.compilation.model.NewCompilationDto;
-import ru.practicum.compilation.model.UpdateCompilationRequest;
-import ru.practicum.event.model.EventFullDto;
-import ru.practicum.event.model.UpdateEventAdminRequest;
+import ru.practicum.category.dto.CategoryDto;
+import ru.practicum.category.dto.NewCategoryDto;
+import ru.practicum.compilation.dto.CompilationDto;
+import ru.practicum.compilation.dto.NewCompilationDto;
+import ru.practicum.compilation.dto.UpdateCompilationRequest;
+import ru.practicum.event.dto.EventFullDto;
+import ru.practicum.event.dto.UpdateEventAdminRequest;
 import ru.practicum.user.dto.NewUserRequest;
 import ru.practicum.user.model.User;
 

@@ -1,4 +1,4 @@
-package ru.practicum.compilation.model;
+package ru.practicum.compilation.dto;
 
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;

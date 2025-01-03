@@ -2,9 +2,12 @@ package ru.practicum.event.mapper;
 
 import ru.practicum.category.mapper.CategoryMapper;
 import ru.practicum.category.model.Category;
+import ru.practicum.event.dto.EventFullDto;
+import ru.practicum.event.dto.EventShortDto;
+import ru.practicum.event.dto.NewEventDto;
 import ru.practicum.event.model.*;
 import ru.practicum.location.mapper.LocationMapper;
-import ru.practicum.location.model.LocationDto;
+import ru.practicum.location.model.Locations;
 import ru.practicum.user.mapper.UserMapper;
 import ru.practicum.user.model.User;
 
@@ -16,7 +19,7 @@ public class EventMapper {
     public static Event fromNewEventDtoToEvent(NewEventDto newEventDto,
                                                Category category,
                                                User user,
-                                               LocationDto locationDto) {
+                                               Locations locations) {
         DateTimeFormatter formater = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String createOn = LocalDateTime.now().format(formater);
         return Event.builder()
@@ -28,7 +31,7 @@ public class EventMapper {
                 .description(newEventDto.getDescription())
                 .eventDate(newEventDto.getEventDate())
                 .initiator(user)
-                .location(locationDto)
+                .location(locations)
                 .paid(newEventDto.getPaid())
                 .participantLimit(newEventDto.getParticipantLimit())
                 .publishedOn(null)
