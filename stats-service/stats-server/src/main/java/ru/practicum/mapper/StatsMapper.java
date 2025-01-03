@@ -3,18 +3,23 @@ package ru.practicum.mapper;
 import ru.practicum.EndpointHitDto;
 import ru.practicum.model.Stats;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 public class StatsMapper {
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
-    public static Stats toStats(EndpointHitDto dto) {
+    public static Stats fromEndpointHitDtoToEndpointHit(EndpointHitDto endpointHitDto) {
         return Stats.builder()
-                .app(dto.getApp())
-                .uri(dto.getUri())
-                .ip(dto.getIp())
-                .timestamp(LocalDateTime.parse(dto.getTimestamp(), formatter))
+                .id(null)
+                .uri(endpointHitDto.getUri())
+                .ip(endpointHitDto.getIp())
+                .app(endpointHitDto.getApp())
+                .timestamp(endpointHitDto.getTimestamp())
+                .build();
+    }
+
+    public static EndpointHitDto fromEndpointHitToEndpointHitDto(Stats stats) {
+        return EndpointHitDto.builder()
+                .uri(stats.getUri())
+                .ip(stats.getIp())
+                .app(stats.getApp())
+                .timestamp(stats.getTimestamp())
                 .build();
     }
 }

@@ -19,7 +19,7 @@ services:
     image: postgres:16.1
     container_name: jewm_stats_db
     ports:
-      - "5432:5432"
+      - "5433:5432"
     environment:
       - POSTGRES_USER=dbuser
       - POSTGRES_PASSWORD=12345
@@ -51,7 +51,7 @@ services:
     image: postgres:16.1
     container_name: jewm_db
     ports:
-      - "6543:5432"
+      - "6544:5432"
     environment:
       - POSTGRES_USER=dbuser
       - POSTGRES_PASSWORD=12345
