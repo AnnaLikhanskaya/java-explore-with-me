@@ -9,7 +9,6 @@ import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication()
 @ComponentScan(basePackages = {"ru.practicum"})
-@PropertySource("classpath:application.properties")
 public class ExploreApp {
     public static void main(String[] args) {
         SpringApplication.run(ExploreApp.class, args);
