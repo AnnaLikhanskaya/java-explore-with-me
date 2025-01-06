@@ -15,4 +15,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "WHERE (:usersIds IS NULL OR u.id IN :usersIds)")
     List<User> findAllUsersByCondition(@Param("usersIds") List<Long> usersIds, Pageable pageable);
 
+    boolean existsByEmail(String email);
+
 }

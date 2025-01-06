@@ -78,6 +78,9 @@ public class AdminServiceImpl implements AdminService {
     @Transactional
     @Override
     public CategoryDto addNewCategory(NewCategoryDto newCategoryDto) {
+        if (categoryRepository.existsByName(newCategoryDto.getName())) {
+            throw new ConflictException("Категория с таким именем уже существует");
+        }
         try {
             Category category = CategoryMapper.fromNewCategoryDtoToCategory(newCategoryDto);
             category = categoryRepository.save(category);
@@ -260,6 +263,9 @@ public class AdminServiceImpl implements AdminService {
     @Transactional
     @Override
     public User addNewUser(NewUserRequest newUserRequest) {
+        if (userRepository.existsByEmail(newUserRequest.getEmail())) {
+            throw new ConflictException("Пользователь с таким email уже существует");
+        }
         User newUser = UserMapper.fromNewUserRequestToUserDto(newUserRequest);
         try {
             log.info("Добавление нового пользователя: {}", newUser.getName());
@@ -408,7 +414,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public void deleteUserComment(Long commentId) {
         idValidation(commentId, "commentId");
-        Comment comment = commentRepository.findById(commentId).orElseThrow(() ->
+        commentRepository.findById(commentId).orElseThrow(() ->
                 new NotFoundException("Комментарий с id= " + commentId + " не найден"));
         commentRepository.deleteById(commentId);
     }
