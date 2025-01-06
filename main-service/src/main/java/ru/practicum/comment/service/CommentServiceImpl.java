@@ -35,7 +35,7 @@ public class CommentServiceImpl implements CommentService {
             throw new BadRequestException("Параметр запроса from должен быть больше 0, теперь from=" + from);
         }
         if (size < 0) {
-            throw new BadRequestException("Параметр запроса 'size' должен быть больше 0, теперь size="+ size);
+            throw new BadRequestException("Параметр запроса 'size' должен быть больше 0, теперь size=" + size);
         }
 
         Pageable pageable = PageRequest.of(from / size, size);
@@ -51,7 +51,7 @@ public class CommentServiceImpl implements CommentService {
     public CommentDto getCommentById(Long commentId) {
         idValidation(commentId, "commentId");
         Comment comment = commentRepository.findById(commentId).orElseThrow(() ->
-                new NotFoundException("Комментарий с идентификатором= " + commentId+ " не найден"));
+                new NotFoundException("Комментарий с идентификатором= " + commentId + " не найден"));
         return CommentMapper.fromCommentToCommentDto(comment);
     }
 
