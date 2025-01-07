@@ -8,12 +8,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
+import ru.practicum.comment.dto.CommentDto;
+import ru.practicum.comment.dto.NewCommentDto;
+import ru.practicum.comment.dto.UpdateCommentDto;
+import ru.practicum.comment.mapper.CommentMapper;
+import ru.practicum.comment.model.Comment;
+import ru.practicum.comment.repository.CommentRepository;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.dto.NewEventDto;
 import ru.practicum.event.dto.UpdateEventUserRequest;
 import ru.practicum.event.mapper.EventMapper;
-import ru.practicum.event.model.*;
+import ru.practicum.event.model.Event;
+import ru.practicum.event.model.EventState;
+import ru.practicum.event.model.StateAction;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.BadRequestException;
 import ru.practicum.exception.ConflictException;
@@ -49,6 +57,8 @@ public class UserServiceImpl implements UserService {
     private final RequestRepository requestRepository;
 
     private final LocationRepository locationRepository;
+
+    private final CommentRepository commentRepository;
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -347,6 +357,55 @@ public class UserServiceImpl implements UserService {
         request.setStatus(RequestStatus.CANCELED.name());
 
         return requestRepository.save(request);
+    }
+
+    @Override
+    public CommentDto addUserComment(Long userId, Long eventId, NewCommentDto newCommentDto) {
+        idValidation(userId, "userId");
+        idValidation(eventId, "eventId");
+        User user = userRepository.findById(userId).orElseThrow(() ->
+                new NotFoundException("Пользователь с id=" + userId + " не найден"));
+        Event event = eventRepository.findById(eventId).orElseThrow(() ->
+                new NotFoundException("Событие с id=" + eventId + " не найдено"));
+        if (!event.getState().equals(EventState.PUBLISHED.name())) {
+            throw new ConflictException("Событие должно иметь статус ОПУБЛИКОВАННОГО, чтобы можно было добавить комментарий");
+        }
+        Comment comment = CommentMapper.fromNewCommentDtoToComment(newCommentDto, event, user);
+        comment = commentRepository.save(comment);
+        return CommentMapper.fromCommentToCommentDto(comment);
+    }
+
+    @Override
+    public CommentDto updateUserComment(Long userId, Long eventId, Long commentId, UpdateCommentDto updateCommentDto) {
+        idValidation(userId, "userId");
+        idValidation(eventId, "eventId");
+        idValidation(commentId, "commentId");
+        User user = userRepository.findById(userId).orElseThrow(() ->
+                new NotFoundException("Пользователь с id=" + userId + " не найден"));
+        Event event = eventRepository.findById(eventId).orElseThrow(() ->
+                new NotFoundException("Событие с id=" + eventId + " не найдено"));
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() ->
+                new NotFoundException("Комментрий с id= " + commentId + " не найден"));
+        if (!userId.equals(comment.getCommentator().getId())) {
+            throw new ForbiddenException("Только комментатор может изменить свой комментарий");
+        }
+        comment.setText(updateCommentDto.getText());
+        return CommentMapper.fromCommentToCommentDto(commentRepository.save(comment));
+    }
+
+    @Override
+    public void deleteUserComment(Long userId, Long commentId) {
+        idValidation(userId, "userId");
+        idValidation(commentId, "commentId");
+        User user = userRepository.findById(userId).orElseThrow(() ->
+                new NotFoundException("Пользователь с id=" + userId + " не найден"));
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() ->
+                new NotFoundException("Комментрий с id= " + commentId + " не найден"));
+        if (!userId.equals(comment.getCommentator().getId())) {
+            throw new ForbiddenException("Только комментатор может удалить свой комментарий");
+        }
+
+        commentRepository.deleteById(commentId);
     }
 
     private void idValidation(Long id, String fieldName) {

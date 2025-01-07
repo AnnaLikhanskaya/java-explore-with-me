@@ -6,6 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.comment.dto.CommentDto;
+import ru.practicum.comment.dto.NewCommentDto;
+import ru.practicum.comment.dto.UpdateCommentDto;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.dto.NewEventDto;
@@ -118,6 +121,39 @@ public class UserController {
         ParticipationRequest request = userService.cancelUserRequestOnEvent(userId, requestId);
         log.info("PATCH /users/{}/requests/{}/cancel\n return: {}", userId, requestId, request);
         return request;
+    }
+
+    @PostMapping("/{userId}/events/{eventId}/comments")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CommentDto addUserComment(@PathVariable(name = "userId") Long userId,
+                                     @PathVariable(name = "eventId") Long eventId,
+                                     @Valid @RequestBody NewCommentDto newCommentDto) {
+        log.info("POST /users/{}/events/{}/comments, body: {}", userId, eventId, newCommentDto);
+        CommentDto commentDto = userService.addUserComment(userId, eventId, newCommentDto);
+        log.info("POST /users/{}/events/{}/comments, body: {}\n return: {}", userId, eventId, newCommentDto, commentDto);
+        return commentDto;
+    }
+
+    @PatchMapping("/{userId}/events/{eventId}/comments/{commentId}")
+    @ResponseStatus(HttpStatus.OK)
+    public CommentDto updateUserComment(@PathVariable(name = "userId") Long userId,
+                                        @PathVariable(name = "eventId") Long eventId,
+                                        @PathVariable(name = "commentId") Long commentId,
+                                        @Valid @RequestBody UpdateCommentDto updateCommentDto) {
+        log.info("PATCH /users/{}/events/{}/comments/{}, body: {}", userId, eventId, commentId, updateCommentDto);
+        CommentDto commentDto = userService.updateUserComment(userId, eventId, commentId, updateCommentDto);
+        log.info("PATCH /users/{}/events/{}/comments/{}, body: {}\n return: {}",
+                userId, eventId, commentId, updateCommentDto, commentDto);
+        return commentDto;
+    }
+
+    @DeleteMapping("/{userId}/comments/{commentId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUserComment(@PathVariable(name = "userId") Long userId,
+                                  @PathVariable(name = "commentId") Long commentId) {
+        log.info("DELETE /users/{}/comments/{}", userId, commentId);
+        userService.deleteUserComment(userId, commentId);
+        log.info("DELETE /users/{}/comments/{} success", userId, commentId);
     }
 
 }

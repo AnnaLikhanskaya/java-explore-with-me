@@ -13,23 +13,30 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.category.mapper.CategoryMapper;
-import ru.practicum.category.model.Category;
 import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.category.dto.NewCategoryDto;
+import ru.practicum.category.mapper.CategoryMapper;
+import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
+import ru.practicum.comment.dto.CommentDto;
+import ru.practicum.comment.mapper.CommentMapper;
+import ru.practicum.comment.model.Comment;
+import ru.practicum.comment.repository.CommentRepository;
 import ru.practicum.compilation.dto.CompilationDto;
 import ru.practicum.compilation.dto.NewCompilationDto;
 import ru.practicum.compilation.dto.UpdateCompilationRequest;
 import ru.practicum.compilation.mapper.CompilationMapper;
-import ru.practicum.compilation.model.*;
+import ru.practicum.compilation.model.Compilation;
+import ru.practicum.compilation.model.CompilationsEvents;
 import ru.practicum.compilation.repository.CompilationRepository;
 import ru.practicum.compilation.repository.CompilationsEventsRepository;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.dto.UpdateEventAdminRequest;
 import ru.practicum.event.mapper.EventMapper;
-import ru.practicum.event.model.*;
+import ru.practicum.event.model.Event;
+import ru.practicum.event.model.EventState;
+import ru.practicum.event.model.StateAction;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.*;
 import ru.practicum.location.mapper.LocationMapper;
@@ -62,12 +69,18 @@ public class AdminServiceImpl implements AdminService {
 
     private final LocationRepository locationRepository;
 
+    private final CommentRepository commentRepository;
+
+
     @PersistenceContext
     private EntityManager entityManager;
 
     @Transactional
     @Override
     public CategoryDto addNewCategory(NewCategoryDto newCategoryDto) {
+        if (categoryRepository.existsByName(newCategoryDto.getName())) {
+            throw new ConflictException("Категория с таким именем уже существует");
+        }
         try {
             Category category = CategoryMapper.fromNewCategoryDtoToCategory(newCategoryDto);
             category = categoryRepository.save(category);
@@ -250,6 +263,9 @@ public class AdminServiceImpl implements AdminService {
     @Transactional
     @Override
     public User addNewUser(NewUserRequest newUserRequest) {
+        if (userRepository.existsByEmail(newUserRequest.getEmail())) {
+            throw new ConflictException("Пользователь с таким email уже существует");
+        }
         User newUser = UserMapper.fromNewUserRequestToUserDto(newUserRequest);
         try {
             log.info("Добавление нового пользователя: {}", newUser.getName());
@@ -373,6 +389,34 @@ public class AdminServiceImpl implements AdminService {
 
         log.info("Подборка с id={} успешно обновлена", compId);
         return resultDto;
+    }
+
+    @Override
+    public List<CommentDto> getUserCommentaries(Long userId, Integer from, Integer size) {
+        idValidation(userId, "userId");
+        if (from < 0) {
+            throw new BadRequestException("Параметр запроса from должен быть больше 0, теперь from=" + from);
+        }
+        if (size < 0) {
+            throw new BadRequestException("Параметр запроса 'size' должен быть больше 0, теперь значение size=" + size);
+        }
+        User user = userRepository.findById(userId).orElseThrow(() ->
+                new NotFoundException("Пользователь с id= " + userId + " не найден"));
+
+        Pageable pageable = PageRequest.of(from / size, size);
+        List<Comment> commentList = commentRepository.findAllCommentariesByCommentatorId(userId, pageable);
+        if (commentList.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return commentList.stream().map(CommentMapper::fromCommentToCommentDto).toList();
+    }
+
+    @Override
+    public void deleteUserComment(Long commentId) {
+        idValidation(commentId, "commentId");
+        commentRepository.findById(commentId).orElseThrow(() ->
+                new NotFoundException("Комментарий с id= " + commentId + " не найден"));
+        commentRepository.deleteById(commentId);
     }
 
     private void idValidation(Long id, String fieldName) {

@@ -2,6 +2,7 @@ package ru.practicum.admin.service;
 
 import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.category.dto.NewCategoryDto;
+import ru.practicum.comment.dto.CommentDto;
 import ru.practicum.compilation.dto.CompilationDto;
 import ru.practicum.compilation.dto.NewCompilationDto;
 import ru.practicum.compilation.dto.UpdateCompilationRequest;
@@ -44,4 +45,7 @@ public interface AdminService {
 
     CompilationDto updateCompilation(Long compId, UpdateCompilationRequest updateCompilation);
 
+    List<CommentDto> getUserCommentaries(Long userId, Integer from, Integer size);
+
+    void deleteUserComment(Long commentId);
 }

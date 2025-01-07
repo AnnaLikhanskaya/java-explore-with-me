@@ -13,4 +13,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
             "FROM Category c")
     List<Category> findAllCategories(Pageable pageable);
 
+    boolean existsByName(String name);
+
 }
